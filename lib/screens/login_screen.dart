@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:login_rive_animation/screens/products_screen.dart';
 import 'package:rive/rive.dart';
 
 import 'dart:async'; //importar timer
@@ -12,6 +14,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _isObscure = true; // Control para mostrar/Ocultar contraseña
+  bool _isLoading = false; // 5.2 Muestra el spinner mientras se autentica
 
   // 1.1 Máquina estados  //Cerebro de la animación
   StateMachineController? _controller;
@@ -53,7 +56,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // 4.4 Acción del botón de login
-  void _onLogin() {
+  Future<void> _onLogin() async {
+    if (_isLoading) return;
+
     //Recortar espacios en blanco accidentales
     final email = emailCtrl.text.trim();
     final pass = passCtrl.text;
@@ -75,11 +80,52 @@ class _LoginScreenState extends State<LoginScreen> {
     _isHandsUp?.change(false);
     _numLook?.value = 50.0;
 
-    //4.7 Activar triggers
-    if (emailTypedError == null && passTypedError == null) {
-      _trigSuccess?.fire();
-    } else {
+    //4.7 Si el formato es inválido, el oso falla y no se llama a Firebase
+    if (emailTypedError != null || passTypedError != null) {
       _trigFail?.fire();
+      return;
+    }
+
+    // 5.4 Mostrar spinner
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // 5.5 Retardo artificial para ver el spinner (quitar en producción)
+      await Future.delayed(const Duration(seconds: 2));
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: pass,
+      );
+
+      // 5.6 Login correcto: el oso celebra
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+      _trigSuccess?.fire();
+      await Future.delayed(const Duration(seconds: 2));
+
+      // 5.7 Navegar a productos sin poder regresar al login
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const ProductsScreen()),
+      );
+    } catch (e) {
+      // 5.8 Credenciales no válidas: mensaje general, sin marcar un campo
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+      });
+      _trigFail?.fire();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Credenciales incorrectas en Firebase'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -239,7 +285,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: _onLogin,
                   color: Colors.blue,
                   textColor: Colors.white,
-                  child: const Text('Login'),
+                  // 5.9 Spinner mientras carga
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(color: Colors.white),
+                        )
+                      : const Text('Login'),
                 ),
 
                 const SizedBox(height: 20),
