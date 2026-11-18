@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -7,9 +8,14 @@ class ProductsScreen extends StatelessWidget {
   const ProductsScreen({super.key});
 
   // Web / iOS Simulator / macOS: http://localhost:8090
-  // Emulador Android: http://10.0.2.2:8090
+  // Emulador Android: http://10.0.2.2:8090 (localhost sería el propio emulador)
   // Celular físico: http://<IP de tu PC en la red>:8090
-  static const String baseUrl = 'http://localhost:8090';
+  static String get baseUrl {
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+      return 'http://10.0.2.2:8090';
+    }
+    return 'http://localhost:8090';
+  }
 
   Future<List<dynamic>> fetchProducts() async {
     final response = await http.get(Uri.parse('$baseUrl/products'));
