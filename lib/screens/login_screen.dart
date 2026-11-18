@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:login_rive_animation/screens/products_screen.dart';
+import 'package:login_rive_animation/screens/pets_screen.dart';
 import 'package:rive/rive.dart';
 
 import 'dart:async'; //importar timer
@@ -107,11 +107,11 @@ class _LoginScreenState extends State<LoginScreen> {
       _trigSuccess?.fire();
       await Future.delayed(const Duration(seconds: 2));
 
-      // 5.7 Navegar a productos sin poder regresar al login
+      // 5.7 Navegar a mascotas sin poder regresar al login
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const ProductsScreen()),
+        MaterialPageRoute(builder: (_) => const PetsScreen()),
       );
     } catch (e) {
       // 5.8 Credenciales no válidas: mensaje general, sin marcar un campo

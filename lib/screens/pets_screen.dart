@@ -1,0 +1,68 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+class PetsScreen extends StatelessWidget {
+  const PetsScreen({super.key});
+
+  // Web / iOS Simulator / macOS: http://localhost:8090
+  // Emulador Android: http://10.0.2.2:8090 (localhost sería el propio emulador)
+  // Celular físico: http://<IP de tu PC en la red>:8090
+  static String get baseUrl {
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+      return 'http://10.0.2.2:8090';
+    }
+    return 'http://localhost:8090';
+  }
+
+  Future<List<dynamic>> fetchPets() async {
+    final response = await http.get(Uri.parse('$baseUrl/pet'));
+
+    if (response.statusCode == 200) {
+      // utf8.decode para que se vean bien los acentos (ej. "Siamés")
+      return jsonDecode(utf8.decode(response.bodyBytes)) as List<dynamic>;
+    } else {
+      throw Exception('Error al cargar mascotas de la API');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Mascotas de Spring Boot')),
+      body: FutureBuilder<List<dynamic>>(
+        future: fetchPets(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          final pets = snapshot.data ?? [];
+
+          return ListView.builder(
+            itemCount: pets.length,
+            itemBuilder: (context, index) {
+              final pet = pets[index];
+              final isCat = pet['especie'] == 'Gato';
+              return ListTile(
+                leading: Icon(isCat ? Icons.pets : Icons.pets_outlined),
+                title: Text('${pet['nombre']}'),
+                subtitle: Text(
+                  '${pet['especie']} · ${pet['raza']} · ${pet['sexo']}',
+                ),
+                trailing: Text('${pet['edad']} años\n${pet['peso']} kg',
+                    textAlign: TextAlign.right),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
