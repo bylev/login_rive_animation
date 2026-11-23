@@ -67,9 +67,13 @@ class PetsScreen extends StatelessWidget {
               return ListTile(
                 leading: Icon(isCat ? Icons.pets : Icons.pets_outlined),
                 title: Text('${pet['nombre']}'),
+                // Igual que product['category']['category']: el dueño
+                // viene como un objeto dentro de cada mascota.
                 subtitle: Text(
-                  '${pet['especie']} · ${pet['raza']} · ${pet['sexo']}',
+                  '${pet['especie']} · ${pet['raza']} · ${pet['sexo']}\n'
+                  'Dueño: ${pet['owner']['nombre']} ${pet['owner']['apellido']}',
                 ),
+                isThreeLine: true,
                 trailing: Text(
                   '${pet['edad']} años\n${pet['peso']} kg',
                   textAlign: TextAlign.right,
