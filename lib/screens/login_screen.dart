@@ -42,17 +42,24 @@ class _LoginScreenState extends State<LoginScreen> {
   String? passError;
 
   // 4.3 Validadores
+
   bool isValidEmail(String email) {
-    final re = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
-    return re.hasMatch(email);
+    //final re = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+    if (email.trim().isEmpty) {
+      return false;
+    }
+    return true;
   }
 
   bool isValidPassword(String pass) {
     // mínimo 8, una mayúscula, una minúscula, un dígito y un especial
-    final re = RegExp(
+    /* final re = RegExp(
       r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$',
-    );
-    return re.hasMatch(pass);
+    );*/
+    if (pass.trim().isEmpty) {
+      return false;
+    }
+    return true;
   }
 
   // 4.4 Acción del botón de login
@@ -68,10 +75,11 @@ class _LoginScreenState extends State<LoginScreen> {
     final passTypedError = isValidPassword(pass) ? null : 'Contraseña inválida';
 
     //4.5 Para mostrar el cambio
+    /*
     setState(() {
       emailError = emailTypedError;
       passError = passTypedError;
-    });
+    });*/
 
     //4.6 Cerrar el teclado y oso neutro
     FocusScope.of(context).unfocus();
@@ -122,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _trigFail?.fire();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Credenciales incorrectas en Firebase'),
+          content: Text('Credenciales inválidas'),
           backgroundColor: Colors.red,
         ),
       );
@@ -220,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     });
                   },
                   decoration: InputDecoration(
-                    errorText: emailError,
+                    //! errorText: emailError,
                     hintText: "Email",
                     prefixIcon: const Icon(Icons.email),
                     border: OutlineInputBorder(
@@ -244,7 +252,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   obscureText: _isObscure,
                   decoration: InputDecoration(
-                    errorText: passError,
+                    //!errorText: passError,
                     hintText: "Password",
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
