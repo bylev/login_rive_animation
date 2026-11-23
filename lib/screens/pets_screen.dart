@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:login_rive_animation/screens/login_screen.dart';
 
 class PetsScreen extends StatelessWidget {
   const PetsScreen({super.key});
@@ -27,7 +29,23 @@ class PetsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Mascotas de Spring Boot')),
+      appBar: AppBar(
+        title: const Text('Mascotas de Spring Boot'),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              if (!context.mounted) return;
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
+            },
+            icon: const Icon(Icons.logout),
+            tooltip: 'Cerrar sesión',
+          ),
+        ],
+      ),
       body: FutureBuilder<List<dynamic>>(
         future: fetchPets(),
         builder: (context, snapshot) {
