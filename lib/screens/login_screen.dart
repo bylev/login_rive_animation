@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:login_rive_animation/screens/pets_screen.dart';
+import 'package:login_rive_animation/screens/signup_screen.dart';
 import 'package:rive/rive.dart';
 
 import 'dart:async'; //importar timer
@@ -133,6 +134,74 @@ class _LoginScreenState extends State<LoginScreen> {
           content: Text('Credenciales inválidas'),
           backgroundColor: Colors.red,
         ),
+      );
+    }
+  }
+
+  Future<void> _onForgotPassword() async {
+    String resetEmail = emailCtrl.text.trim();
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Recuperar contraseña'),
+          content: TextFormField(
+            initialValue: resetEmail,
+            keyboardType: TextInputType.emailAddress,
+            autofocus: true,
+            onChanged: (value) => resetEmail = value,
+            decoration: const InputDecoration(
+              labelText: 'Correo electrónico',
+              hintText: 'ejemplo@tecdesoftware.edu.mx',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: const Text('Enviar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true) return;
+
+    final email = resetEmail.trim();
+    if (email.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Ingresa un correo electrónico'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Si el correo está registrado, recibirás un enlace para restablecer tu contraseña',
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      final message = e.code == 'invalid-email'
+          ? 'El formato del correo no es válido'
+          : (e.message ?? 'No se pudo enviar el correo');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: Colors.red),
       );
     }
   }
@@ -276,13 +345,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 10),
                 SizedBox(
                   width: screenSize.width,
-                  child: const Text(
-                    "Forgot Password?",
-                    textAlign: TextAlign.right,
-                    style: TextStyle(decoration: TextDecoration.underline),
+                  child: GestureDetector(
+                    onTap: _onForgotPassword,
+                    child: const Text(
+                      "Forgot Password?",
+                      textAlign: TextAlign.right,
+                      style: TextStyle(decoration: TextDecoration.underline),
+                    ),
                   ),
                 ),
-
                 const SizedBox(height: 10),
                 MaterialButton(
                   minWidth: screenSize.width,
@@ -308,15 +379,25 @@ class _LoginScreenState extends State<LoginScreen> {
                   width: screenSize.width,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Text("Don't have an account?"),
-                      SizedBox(width: 5),
-                      Text(
-                        "Sign Up",
-                        style: TextStyle(
-                          decoration: TextDecoration.underline,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                    children: [
+                      const Text("Don't have an account?"),
+                      const SizedBox(width: 5),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const SignUpScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          "Sign Up",
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ],
