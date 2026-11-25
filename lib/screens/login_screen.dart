@@ -298,7 +298,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   decoration: InputDecoration(
                     //! errorText: emailError,
-                    hintText: "Email",
+                    hintText: "Correo",
                     prefixIcon: const Icon(Icons.email),
                     border: OutlineInputBorder(
                       // Propiedad para redondear esquinas
@@ -322,7 +322,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: _isObscure,
                   decoration: InputDecoration(
                     //!errorText: passError,
-                    hintText: "Password",
+                    hintText: "Contraseña",
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       onPressed: () {
@@ -348,7 +348,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: GestureDetector(
                     onTap: _onForgotPassword,
                     child: const Text(
-                      "Forgot Password?",
+                      "¿Olvidaste tu contraseña?",
                       textAlign: TextAlign.right,
                       style: TextStyle(decoration: TextDecoration.underline),
                     ),
@@ -371,7 +371,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 24,
                           child: CircularProgressIndicator(color: Colors.white),
                         )
-                      : const Text('Login'),
+                      : const Text('Inicia sesión'),
                 ),
 
                 const SizedBox(height: 20),
@@ -380,7 +380,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Don't have an account?"),
+                      const Text("¿No tienes una cuenta?"),
                       const SizedBox(width: 5),
                       GestureDetector(
                         onTap: () {
@@ -392,7 +392,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           );
                         },
                         child: const Text(
-                          "Sign Up",
+                          "Registrarse",
                           style: TextStyle(
                             decoration: TextDecoration.underline,
                             fontWeight: FontWeight.bold,

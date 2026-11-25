@@ -65,7 +65,21 @@ class PetsScreen extends StatelessWidget {
               final pet = pets[index];
               final isCat = pet['especie'] == 'Gato';
               return ListTile(
-                leading: Icon(isCat ? Icons.pets : Icons.pets_outlined),
+                leading: ClipRRect(
+                  borderRadius: BorderRadiusGeometry.circular(8),
+                  child: Image.network(
+                    pet['imageUrl'] ?? '',
+                    width: 56,
+                    height: 56,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      width: 56,
+                      height: 56,
+                      color: Colors.grey.shade300,
+                      child: Icon(isCat ? Icons.pets : Icons.pets_outlined),
+                    ),
+                  ),
+                ),
                 title: Text('${pet['nombre']}'),
                 // Igual que product['category']['category']: el dueño
                 // viene como un objeto dentro de cada mascota.
